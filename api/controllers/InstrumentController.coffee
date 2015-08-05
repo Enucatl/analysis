@@ -38,10 +38,9 @@ module.exports =
                 if response.statusCode is 304
                     res.json cached.cached
                 else
-                    json = response.body.candles.filter (d) -> d.complete is true
                     memoryCache.set "etag", response.headers["etag"]
                     memoryCache.set "cached", json
-                    res.json json
+                    res.json response.body.candles
             .catch (error) -> next error.error
 
     historical: (req, res, next) ->
