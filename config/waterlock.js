@@ -60,7 +60,7 @@ module.exports.waterlock = {
     secret: 'this is my secret',
     expiry:{
       unit: 'days',
-      length: '7'
+      length: '300'
     },
     audience: 'galilean-traders',
     subject: 'subject',

@@ -3,8 +3,6 @@
  # @description :: Server-side logic for managing instruments
  # @help        :: See http://links.sailsjs.org/docs/controllers
 
-padding = 18
-
 module.exports =
 
     index: (req, res, next) ->

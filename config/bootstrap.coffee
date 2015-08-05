@@ -57,6 +57,7 @@ module.exports.bootstrap = (cb) ->
             return o
 
     place_order = (o) ->
+        sails.log.debug "signals for instrument", o.instrument, o.signals.status
         signal = o.signals.status
         return null if not signal
         options =
@@ -142,6 +143,7 @@ module.exports.bootstrap = (cb) ->
                                 false
                     .then (valid) ->
                         token = if valid.length > 0 then valid[0].token else undefined
+                        sails.log.debug "user logged in", user
                         {
                             token: token
                             user: user
@@ -155,6 +157,7 @@ module.exports.bootstrap = (cb) ->
                     return unless user.token?
                     get_open_instruments user
                         .then (instruments) ->
+                            sails.log.debug "open instruments", instruments
                             Promise.map instruments, (instrument) -> 
                                 get_rawdata(instrument)
                                     .then get_m5_stats
