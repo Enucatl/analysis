@@ -42,6 +42,8 @@ module.exports.bootstrap = (cb) ->
             json: true
         request options
             .then (open_trades) ->
+                o.already_open = _.any(open_trades, (trade) ->
+                        o.signals.ema5ema10.value and trade.side == o.signals.ema5ema10.value)
                 open_trades.filter (trade) ->
                     o.signals.ema5ema10.value and trade.side != o.signals.ema5ema10.value 
             .map (trade) ->
@@ -59,6 +61,9 @@ module.exports.bootstrap = (cb) ->
     place_order = (o) ->
         sails.log.debug "signals for instrument", o.instrument, o.signals.status
         signal = o.signals.status
+        if o.already_open
+            sails.log.debug "order already placed"
+            return null
         return null if not signal
         options =
             url: "http://localhost:1337/api/order/create"
@@ -150,27 +155,29 @@ module.exports.bootstrap = (cb) ->
                         }
 
     scheduled_function = ->
-        User.find().then (users) ->
-            Promise
-                .map users, get_token
-                .map (user) -> 
-                    return unless user.token?
-                    get_open_instruments user
-                        .then (instruments) ->
-                            sails.log.debug "open instruments", instruments
-                            Promise.map instruments, (instrument) -> 
-                                get_rawdata(instrument)
-                                    .then get_m5_stats
-                                    .then (m5_stats) ->
-                                        Promise.props _.merge instrument, {signals: get_trade_status m5_stats}
-                                    .then save_attempt
-                                    .then update_trades
-                                    .then place_order
+        User.find()
+            .then (users) ->
+                Promise
+                    .map users, get_token
+                    .map (user) -> 
+                        return unless user.token?
+                        get_open_instruments user
+                            .then (instruments) ->
+                                sails.log.debug "open instruments", instruments
+                                Promise.map instruments, (instrument) -> 
+                                    get_rawdata(instrument)
+                                        .then get_m5_stats
+                                        .then (m5_stats) ->
+                                            Promise.props _.merge instrument, {signals: get_trade_status m5_stats}
+                                                .then save_attempt
+                                        .then update_trades
+                                        .then place_order
+            .then scheduled_function
 
     scheduled_function()    
 
-    schedule = later.parse.recur().every(5).minute()
+    #schedule = later.parse.recur().every(5).minute()
 
-    later.setInterval scheduled_function, schedule
+    #later.setInterval scheduled_function, schedule
 
     cb()
