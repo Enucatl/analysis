@@ -56,7 +56,7 @@ module.exports.bootstrap = (cb) ->
                         trade_id: trade.id
                 request(options)
                     .then (deleted_trade) -> console.log "trade deleted", deleted_trade
-            return o
+            .then -> return o
 
     place_order = (o) ->
         sails.log.debug "signals for instrument", o.instrument, o.signals.status
@@ -163,7 +163,6 @@ module.exports.bootstrap = (cb) ->
                         return unless user.token?
                         get_open_instruments user
                             .then (instruments) ->
-                                sails.log.debug "open instruments", instruments
                                 Promise.map instruments, (instrument) -> 
                                     get_rawdata(instrument)
                                         .then get_m5_stats
