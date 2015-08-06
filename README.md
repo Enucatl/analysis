@@ -37,7 +37,7 @@ mocha test/unit/User.test.coffee
 # Run
 
 ```bash
-forever -w start app.js
+forever -w start app.js --watchIgnore .git
 ```
 
 # Logs
