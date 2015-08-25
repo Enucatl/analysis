@@ -2,7 +2,7 @@ request = require "request-promise"
     .defaults json: true
 
 RateLimiter = require("limiter").RateLimiter
-limiter = new RateLimiter(2, 'second')
+limiter = new RateLimiter(1.9, 'second')
 Promise = require "bluebird"
 rateLimitAsync = Promise.promisify limiter.removeTokens
     .bind limiter

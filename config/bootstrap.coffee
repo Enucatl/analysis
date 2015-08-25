@@ -30,7 +30,8 @@ module.exports.bootstrap = (cb) ->
             stoch: o.signals.stoch.value
             status: o.signals.status
         TradeAttempt.create(trade_attempt)
-        return o
+            .then (created) ->
+                return o
 
     update_trades = (o) ->
         options = 
@@ -148,7 +149,6 @@ module.exports.bootstrap = (cb) ->
                                 false
                     .then (valid) ->
                         token = if valid.length > 0 then valid[0].token else undefined
-                        sails.log.debug "user logged in", user
                         {
                             token: token
                             user: user
