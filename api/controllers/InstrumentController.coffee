@@ -66,7 +66,7 @@ module.exports =
             fun: "EMA"
             args:
                 x: candles.map (d) ->
-                    d.closeMid
+                    d.openMid
                 n: 5
         zmqUtils.send zmq_object, (data) ->
             sails.log.silly "ema5 answer data: #{data}"
@@ -80,7 +80,7 @@ module.exports =
             fun: "EMA"
             args:
                 x: candles.map (d) ->
-                    d.closeMid
+                    d.openMid
                 n: 10
         zmqUtils.send zmq_object, (data) ->
             sails.log.silly "ema10 answer data: #{data}"
@@ -90,11 +90,12 @@ module.exports =
 
     rsi: (req, res) ->
         candles = req.body
+            .filter (d) -> d.complete
+            .map (d) -> d.closeMid
         zmq_object =
             fun: "RSI"
             args:
-                price: candles.map (d) ->
-                    d.closeMid
+                price: candles
                 n: 14
         zmqUtils.send zmq_object, (data) ->
             sails.log.silly "rsi answer data: #{data}"
@@ -107,7 +108,7 @@ module.exports =
         zmq_object =
             fun: "stoch.json"
             args:
-                data: candles
+                data: candles.filter (d) -> d.complete
         zmqUtils.send zmq_object, (data) ->
             output = JSON.parse "#{data}"
             response = [{
