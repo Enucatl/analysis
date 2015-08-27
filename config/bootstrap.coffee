@@ -56,7 +56,7 @@ module.exports.bootstrap = (cb) ->
                     json:
                         trade_id: trade.id
                 request(options)
-                    .then (deleted_trade) -> console.log "trade deleted", deleted_trade
+                    .then (deleted_trade) -> sails.log.debug "trade deleted", deleted_trade
             .then -> return o
 
     place_order = (o) ->
@@ -77,7 +77,7 @@ module.exports.bootstrap = (cb) ->
                 precision: o.precision.length - 2
                 side: signal
         request(options).then (response) ->
-            sails.log.debug "placed order, got", response.body
+            sails.log.debug "placed order, got", response
 
     get_trade_status = (signals) ->
         all_equal = signals.ema5ema10.value and signals.ema5ema10.value == signals.rsi.value and signals.rsi.value == signals.stoch.value
@@ -171,6 +171,8 @@ module.exports.bootstrap = (cb) ->
                                                 .then save_attempt
                                         .then update_trades
                                         .then place_order
+            .catch (error) ->
+                sails.log.error error
             .then scheduled_function
 
     scheduled_function()    

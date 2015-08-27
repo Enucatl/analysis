@@ -15,7 +15,7 @@ module.exports = {
         takeprofit = 0.15 * adr * pip
         trailingstop = 24
         options = {}
-        console.log "creating order for", instrument, adr, pip, precision, side, stoploss, takeprofit
+        sails.log.debug "creating order for", instrument, adr, pip, precision, side, stoploss, takeprofit
         oandaHeaders req.user.account_type, req.user.oanda_token, options
         
         get_current_price = ->
@@ -26,6 +26,7 @@ module.exports = {
             oandaRequest options
                 .then (body) ->
                     prices = body.prices[0]
+                    sails.log.debug "the current prices are:", prices
                     if "status" in prices
                         # the presence of this parameter means that trading is
                         # halted, see:
