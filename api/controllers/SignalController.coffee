@@ -37,12 +37,12 @@ module.exports =
             sell = !ema5_upwards and !ema10_upwards and ema5_cross_downwards_ema10
             if buy
                 value = "buy"
-                sails.log.debug "ema5", ema5
-                sails.log.debug "ema10", ema10
+                sails.log.silly "ema5", ema5
+                sails.log.silly "ema10", ema10
             else if sell
                 value = "sell"
-                sails.log.debug "ema5", ema5
-                sails.log.debug "ema10", ema10
+                sails.log.silly "ema5", ema5
+                sails.log.silly "ema10", ema10
             else
                 value = false
             response =
